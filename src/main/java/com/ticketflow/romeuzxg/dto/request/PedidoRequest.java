@@ -7,9 +7,10 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record PedidoRequest(
-        @NotNull Long usuarioId,
+        @NotNull UUID usuarioId,
         @NotNull StatusPedido status,
         @NotNull @PositiveOrZero BigDecimal total,
         @NotBlank String cupomCodigo,

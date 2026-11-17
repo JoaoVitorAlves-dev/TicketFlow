@@ -1,15 +1,18 @@
 package com.ticketflow.romeuzxg.dto.response;
 
-import com.ticketflow.romeuzxg.domain.Roles.CategoriaEvento;
-import com.ticketflow.romeuzxg.domain.Roles.ClassificacaoIndicativa;
-import com.ticketflow.romeuzxg.domain.Roles.StatusEvento;
+import com.ticketflow.romeuzxg.domain.Roles.StatusPedido;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record PedidoResponse(
         Long id,
-        Long usuarioId,
-        String titulo,
-        CategoriaEvento categoria,
-        StatusEvento status,
-        ClassificacaoIndicativa classificacao
+        UUID usuarioId,
+        StatusPedido status,
+        BigDecimal total,
+        String cupomCodigo,
+        LocalDateTime expiraEm,
+        Long version
 ) {
 }
