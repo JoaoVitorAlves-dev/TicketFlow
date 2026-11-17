@@ -11,6 +11,7 @@ public record EventoRequest(
         @NotBlank String titulo,
         @NotNull CategoriaEvento categoria,
         @NotNull StatusEvento status,
-        @NotNull ClassificacaoIndicativa classificacao
+        @NotNull ClassificacaoIndicativa classificacao,
+        @NotNull Boolean ativo
 ) {
 }
