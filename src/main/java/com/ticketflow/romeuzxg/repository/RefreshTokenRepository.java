@@ -5,12 +5,13 @@ import com.ticketflow.romeuzxg.domain.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
 
-    Boolean existsByToken(String token);
+    Optional<RefreshToken> findByToken(String token);
 
     void deleteByUsuario(Usuario usuario);
 
