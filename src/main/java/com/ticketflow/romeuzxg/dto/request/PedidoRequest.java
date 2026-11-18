@@ -1,6 +1,5 @@
 package com.ticketflow.romeuzxg.dto.request;
 
-import com.ticketflow.romeuzxg.domain.Roles.StatusPedido;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -11,7 +10,6 @@ import java.util.UUID;
 
 public record PedidoRequest(
         @NotNull UUID usuarioId,
-        @NotNull StatusPedido status,
         @NotNull @PositiveOrZero BigDecimal total,
         @NotBlank String cupomCodigo,
         @NotNull LocalDateTime expiraEm,
