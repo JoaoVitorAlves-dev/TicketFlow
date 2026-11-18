@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,8 +34,9 @@ public class PedidoService {
         return pedidoRepository.findAll(pageable).map(PedidoMapper::toDTO);
     }
 
+    //adm
     @Transactional
-    public PedidoResponse criar(PedidoRequest req) {
+    public PedidoResponse criarPedido(PedidoRequest req) {
         Usuario usuario = usuarioRepository.findById(req.usuarioId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -49,6 +51,27 @@ public class PedidoService {
         return PedidoMapper.toDTO(pedidoRepository.save(entity));
     }
 
+    @Transactional
+    public PedidoResponse criar(PedidoRequest req, Authentication auth) {
+        Usuario usuario = usuarioRepository.findById(req.usuarioId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!usuario.getEmail().equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
+        Pedido entity = PedidoMapper.toEntity(req, usuario);
+
+        entity.setStatusPedido(StatusPedido.PENDENTE);
+
+        if (!usuario.getAtivo() || req.expiraEm().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
+        return PedidoMapper.toDTO(pedidoRepository.save(entity));
+    }
+
+    //adm
     @Transactional
     public PedidoResponse atualizar(Long id, PedidoRequest req) {
         Pedido pedido = pedidoRepository.findById(id)
@@ -72,11 +95,22 @@ public class PedidoService {
         return PedidoMapper.toDTO(pedidoRepository.save(pedido));
     }
 
+    //adm
     @Transactional
     public void deletar(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         pedidoRepository.delete(pedido);
+    }
+
+    @Transactional
+    public void deletarRegistros(Long id, Authentication auth) {
+        List<Pedido> allByUsuarioEmail = pedidoRepository.findAllByUsuarioEmail(auth.getName());
+        for (Pedido pedido: allByUsuarioEmail) {
+            if (pedido.getId().equals(id)) {
+                pedidoRepository.delete(pedido);
+            }
+        }
     }
 
     @Transactional
