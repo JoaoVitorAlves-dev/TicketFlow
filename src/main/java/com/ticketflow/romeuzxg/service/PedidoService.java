@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PedidoService {
@@ -48,6 +49,7 @@ public class PedidoService {
         return PedidoMapper.toDTO(pedidoRepository.save(entity));
     }
 
+    @Transactional
     public PedidoResponse atualizar(Long id, PedidoRequest req) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -70,10 +72,22 @@ public class PedidoService {
         return PedidoMapper.toDTO(pedidoRepository.save(pedido));
     }
 
+    @Transactional
     public void deletar(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         pedidoRepository.delete(pedido);
+    }
+
+    @Transactional
+    public void scheduled() {
+        List<Pedido> all = pedidoRepository.findAll();
+
+        for (Pedido al: all) {
+            if (al.getExpiraEm().isBefore(LocalDateTime.now())) {
+                pedidoRepository.delete(al);
+            }
+        }
     }
 
 }
