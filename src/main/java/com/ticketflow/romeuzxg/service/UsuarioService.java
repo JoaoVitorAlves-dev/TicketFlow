@@ -53,7 +53,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void registrar(RegisterRequest req) {
+    public UsuarioResponse registrar(RegisterRequest req) {
         if (usuarioRepository.existsByCpf(req.cpf()) && usuarioRepository.existsByEmail(req.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -66,6 +66,8 @@ public class UsuarioService {
         usuario.setRole(Role.CLIENTE);
 
         usuarioRepository.save(usuario);
+
+        return new UsuarioResponse(usuario.getId(), usuario.getNome(), usuario.getCpf(), usuario.getEmail());
     }
 
     @Transactional
