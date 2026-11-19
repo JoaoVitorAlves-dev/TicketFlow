@@ -33,7 +33,7 @@ public class CheckinService {
         return checkinRepository.findAllByIngressoPedidoUsuarioEmail(auth.getName(), pageable);
     }
 
-    public CheckinResponse criar(CheckinRequest req, Authentication auth) {
+    public CheckinResponse criarRegistro(CheckinRequest req, Authentication auth) {
         Ingresso ingresso = ingressoRepository.findById(req.ingressoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
