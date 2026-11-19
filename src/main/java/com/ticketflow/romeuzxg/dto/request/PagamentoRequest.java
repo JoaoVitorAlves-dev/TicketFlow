@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record PagamentoRequest(
         @NotNull Long pedidoId,
-        @NotNull MetodoPagamento metodo,
-        @NotNull StatusPagamento status,
-        @NotBlank String idempotency_key
+        @NotNull MetodoPagamento metodo
 ) {
 }
