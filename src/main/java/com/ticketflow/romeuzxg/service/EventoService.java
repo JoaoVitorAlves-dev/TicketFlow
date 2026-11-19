@@ -69,7 +69,6 @@ public class EventoService {
         return EventoMapper.toDTO(eventoRepository.save(evento));
     }
 
-    //role organizador
     public EventoResponse atualizarProprio(Long id, EventoRequest req, Authentication auth) {
         Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -93,8 +92,6 @@ public class EventoService {
         return EventoMapper.toDTO(eventoRepository.save(evento));
     }
 
-
-    //role organizador
     public void deletarProprio(Long id, Authentication auth) {
         Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
