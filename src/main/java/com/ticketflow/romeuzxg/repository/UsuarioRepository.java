@@ -1,6 +1,8 @@
 package com.ticketflow.romeuzxg.repository;
 
 import com.ticketflow.romeuzxg.domain.Usuario;
+import com.ticketflow.romeuzxg.dto.response.UsuarioResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

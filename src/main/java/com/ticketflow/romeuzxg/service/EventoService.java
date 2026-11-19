@@ -11,6 +11,7 @@ import com.ticketflow.romeuzxg.repository.OrganizadorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -55,11 +56,6 @@ public class EventoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        if (evento.getStatusEvento().equals(StatusEvento.CANCELADO) || evento.getStatusEvento().equals(StatusEvento.ENCERRADO)
-                || req.status().equals(StatusEvento.CANCELADO) || req.status().equals(StatusEvento.ENCERRADO)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
         if (!evento.getAtivo() || !evento.getOrganizador().getAtivo() || !evento.getOrganizador().getUsuario().getAtivo()
                 || !organizador.getAtivo() || !organizador.getUsuario().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
@@ -71,6 +67,40 @@ public class EventoService {
         evento.setCategoriaEvento(req.categoria());
 
         return EventoMapper.toDTO(eventoRepository.save(evento));
+    }
+
+    //role organizador
+    public EventoResponse atualizarProprio(Long id, EventoRequest req, Authentication auth) {
+        Evento evento = eventoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Organizador organizador = organizadorRepository.findById(req.organizadorId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!evento.getAtivo() || !evento.getOrganizador().getAtivo() || !evento.getOrganizador().getUsuario().getAtivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        if (!evento.getOrganizador().getUsuario().getEmail().equals(auth.getName()) || !organizador.getUsuario().getEmail().equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
+        evento.setCategoriaEvento(req.categoria());
+        evento.setClassificacao(req.classificacao());
+        evento.setTitulo(req.titulo());
+        evento.setStatusEvento(req.status());
+        evento.setOrganizador(organizador);
+
+        return EventoMapper.toDTO(eventoRepository.save(evento));
+    }
+
+
+    //role organizador
+    public void deletarProprio(Long id, Authentication auth) {
+        Evento evento = eventoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (evento.getOrganizador().getUsuario().getEmail().equals(auth.getName())) {
+            eventoRepository.delete(evento);
+        }
     }
 
     public void desativar(Long id) {

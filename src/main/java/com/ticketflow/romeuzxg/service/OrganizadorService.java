@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,8 +26,8 @@ public class OrganizadorService {
         this.organizadorRepository = organizadorRepository;
     }
 
-    public Page<OrganizadorResponse> listar(Pageable pageable) {
-        return organizadorRepository.findAll(pageable).map(OrganizadorMapper::toDTO);
+    public Page<OrganizadorResponse> listar(Pageable pageable, Authentication auth) {
+        return organizadorRepository.findAllByUsuarioEmail(auth.getName(), pageable);
     }
 
     @Transactional
@@ -56,6 +57,28 @@ public class OrganizadorService {
 
         organizador.setNomeFantasia(req.nomeFantasia());
         organizador.setCnpj(req.cnpj());
+
+        return OrganizadorMapper.toDTO(organizadorRepository.save(organizador));
+    }
+
+    //organizador role
+    @Transactional
+    public OrganizadorResponse atualizarConta(Long id, OrganizadorRequest req, Authentication auth) {
+        Organizador organizador = organizadorRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Usuario usuario = usuarioRepository.findById(req.usuarioId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!organizador.getUsuario().getEmail().equals(auth.getName()) || !usuario.getEmail().equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+        if (!usuario.getAtivo() || !organizador.getAtivo()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
+        organizador.setCnpj(req.cnpj());
+        organizador.setNomeFantasia(req.nomeFantasia());
 
         return OrganizadorMapper.toDTO(organizadorRepository.save(organizador));
     }
