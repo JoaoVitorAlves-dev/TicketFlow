@@ -25,38 +25,32 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @Transactional
     @PostMapping("/refresh")
     public ResponseEntity<RefreshTokenResponse> refresh(@RequestBody @Valid RefreshTokenRequest req) {
         return ResponseEntity.ok(usuarioService.refresh(req.accessToken()));
     }
 
-    @Transactional
     @GetMapping("/view")
     public ResponseEntity<UsuarioResponse> visualizar(Authentication auth) {
         return ResponseEntity.ok(usuarioService.visualizar(auth));
     }
 
-    @Transactional
     @PostMapping("/register")
     public ResponseEntity<UsuarioResponse> registrar(@RequestBody @Valid RegisterRequest req) {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.registrar(req));
     }
 
-    @Transactional
     @PostMapping("/login")
     public ResponseEntity<RefreshTokenResponse> logar(@RequestBody @Valid LoginRequest req) {
         return ResponseEntity.ok(usuarioService.login(req));
     }
 
-    @Transactional
     @PatchMapping("/update/{id}")
     public ResponseEntity<Void> atualizarUsuario(@PathVariable UUID id, @RequestBody @Valid RegisterRequest req, Authentication auth) {
         usuarioService.atualizarUsuario(id, req, auth);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @Transactional
     @DeleteMapping("/deactivate")
     public ResponseEntity<Void> desativar(Authentication auth) {
         usuarioService.desativar(auth);
