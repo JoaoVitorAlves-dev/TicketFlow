@@ -98,7 +98,6 @@ public class SessaoService {
         }
     }
 
-    //adm
     @Transactional
     public SessaoResponse criar(SessaoRequest req) {
         Local local = localRepository.findById(req.localId())
