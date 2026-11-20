@@ -1,6 +1,5 @@
 package com.ticketflow.romeuzxg.service;
 
-import com.ticketflow.romeuzxg.domain.Local;
 import com.ticketflow.romeuzxg.domain.Pagamento;
 import com.ticketflow.romeuzxg.domain.Pedido;
 import com.ticketflow.romeuzxg.domain.Roles.StatusPagamento;
@@ -9,7 +8,6 @@ import com.ticketflow.romeuzxg.dto.response.PagamentoResponse;
 import com.ticketflow.romeuzxg.mapper.PagamentoMapper;
 import com.ticketflow.romeuzxg.repository.PagamentoRepository;
 import com.ticketflow.romeuzxg.repository.PedidoRepository;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
