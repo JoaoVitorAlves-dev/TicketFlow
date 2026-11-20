@@ -63,7 +63,7 @@ public class UsuarioService {
         usuario.setCpf(req.cpf());
         usuario.setEmail(req.email());
         usuario.setPassword(passwordEncoder.encode(req.password()));
-        usuario.setRole(Role.CLIENTE);
+        usuario.setRole(Role.CUSTOMER);
 
         usuarioRepository.save(usuario);
 
