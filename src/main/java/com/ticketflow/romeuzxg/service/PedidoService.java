@@ -40,8 +40,8 @@ public class PedidoService {
     }
 
     @Transactional
-    public PedidoResponse criarPedido(PedidoRequest req) {
-        Usuario usuario = usuarioRepository.findById(req.usuarioId())
+    public PedidoResponse criarPedido(PedidoRequest req, Authentication auth) {
+        Usuario usuario = usuarioRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Pedido entity = PedidoMapper.toEntity(req, usuario);
@@ -60,7 +60,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Usuario usuario = usuarioRepository.findById(req.usuarioId())
+        Usuario usuario = usuarioRepository.findById(pedido.getUsuario().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (!pedido.getStatusPedido().equals(StatusPedido.PENDENTE)) {

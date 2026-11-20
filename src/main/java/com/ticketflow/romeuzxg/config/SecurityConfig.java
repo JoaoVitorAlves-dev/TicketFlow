@@ -86,7 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/ticket/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ticket/view").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ticket/viewrecords").hasAnyRole("CUSTOMER", "ORGANIZER")
-                        .requestMatchers(HttpMethod.GET, "/ticket/{id}/qrcode").hasAnyRole("CUSTOMER", "ORGANIZER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/ticket/{id}/qrcode").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/ticket/update/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/ticket/delete/{id}").hasRole("ADMIN")
 

@@ -71,7 +71,7 @@ public class SessaoService {
         Evento evento = eventoRepository.findById(req.eventoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (sessao.getEvento().getAtivo() || sessao.getEvento().getOrganizador().getAtivo() || sessao.getEvento().getOrganizador().getUsuario().getAtivo()) {
+        if (!sessao.getEvento().getAtivo() || !sessao.getEvento().getOrganizador().getAtivo() || !sessao.getEvento().getOrganizador().getUsuario().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         if (!sessao.getEvento().getOrganizador().getUsuario().getEmail().equals(auth.getName())) {
@@ -127,7 +127,7 @@ public class SessaoService {
         Evento evento = eventoRepository.findById(req.eventoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (sessao.getEvento().getAtivo() || sessao.getEvento().getOrganizador().getAtivo() || sessao.getEvento().getOrganizador().getUsuario().getAtivo()) {
+        if (!sessao.getEvento().getAtivo() || !sessao.getEvento().getOrganizador().getAtivo() || !sessao.getEvento().getOrganizador().getUsuario().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 

@@ -9,6 +9,7 @@ import com.ticketflow.romeuzxg.dto.response.CheckinResponse;
 import com.ticketflow.romeuzxg.mapper.CheckinMapper;
 import com.ticketflow.romeuzxg.repository.CheckinRepository;
 import com.ticketflow.romeuzxg.repository.IngressoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,15 +34,24 @@ public class CheckinService {
         return checkinRepository.findAllByIngressoPedidoUsuarioEmail(auth.getName(), pageable);
     }
 
+    @Transactional
     public CheckinResponse criarRegistro(CheckinRequest req, Authentication auth) {
         Ingresso ingresso = ingressoRepository.findById(req.ingressoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        boolean pertenceOrganizador =
+                ingresso.getSessao()
+                        .getEvento()
+                        .getOrganizador()
+                        .getUsuario()
+                        .getEmail()
+                        .equals(auth.getName());
+
         if (!ingresso.getPedido().getUsuario().getAtivo() || !ingresso.getAssento().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (!ingresso.getPedido().getUsuario().getEmail().equals(auth.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        if (!pertenceOrganizador) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         if (ingresso.getStatus().equals(StatusIngresso.CANCELADO) || ingresso.getStatus().equals(StatusIngresso.USADO)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
@@ -52,6 +62,8 @@ public class CheckinService {
         if (!ingresso.getPedido().getStatusPedido().equals(StatusPedido.PAGO)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
+
+        ingresso.setStatus(StatusIngresso.USADO);
 
         Checkin entity = CheckinMapper.toEntity(req, ingresso);
 
@@ -79,6 +91,8 @@ public class CheckinService {
         if (!ingresso.getPedido().getStatusPedido().equals(StatusPedido.PAGO)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
+
+        ingresso.setStatus(StatusIngresso.USADO);
 
         Checkin entity = CheckinMapper.toEntity(req, ingresso);
 

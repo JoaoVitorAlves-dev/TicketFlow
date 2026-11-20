@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record PedidoRequest(
-        @NotNull UUID usuarioId,
         @NotNull @PositiveOrZero BigDecimal total,
         @NotBlank String cupomCodigo,
         @NotNull LocalDateTime expiraEm,

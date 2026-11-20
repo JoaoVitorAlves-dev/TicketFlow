@@ -32,8 +32,8 @@ public class PedidoController {
     }
 
     @PostMapping("/createorder")
-    public ResponseEntity<PedidoResponse> criarPedido(@RequestBody @Valid PedidoRequest req) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.criarPedido(req));
+    public ResponseEntity<PedidoResponse> criarPedido(@RequestBody @Valid PedidoRequest req, Authentication auth) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.criarPedido(req, auth));
     }
 
     @PatchMapping("/update/{id}")

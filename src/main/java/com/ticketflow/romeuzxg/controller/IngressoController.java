@@ -33,7 +33,7 @@ public class IngressoController {
     }
 
     @GetMapping("/{id}/qrcode")
-    public ResponseEntity<byte[]> gerarCodigoQr(@PathVariable Long id) {
+    public ResponseEntity<byte[]> gerarCodigoQr(@PathVariable Long id, Authentication auth) {
         byte[] bytes = ingressoService.gerarQrCode(id);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
     }
