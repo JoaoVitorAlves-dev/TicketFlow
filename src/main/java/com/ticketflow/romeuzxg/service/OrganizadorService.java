@@ -61,7 +61,6 @@ public class OrganizadorService {
         return OrganizadorMapper.toDTO(organizadorRepository.save(organizador));
     }
 
-    //organizador role
     @Transactional
     public OrganizadorResponse atualizarConta(Long id, OrganizadorRequest req, Authentication auth) {
         Organizador organizador = organizadorRepository.findById(id)

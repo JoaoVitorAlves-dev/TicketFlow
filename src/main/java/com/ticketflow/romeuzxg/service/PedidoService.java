@@ -34,7 +34,6 @@ public class PedidoService {
         return pedidoRepository.findAll(pageable).map(PedidoMapper::toDTO);
     }
 
-    //adm
     @Transactional
     public PedidoResponse criarPedido(PedidoRequest req) {
         Usuario usuario = usuarioRepository.findById(req.usuarioId())
@@ -52,7 +51,7 @@ public class PedidoService {
     }
 
     @Transactional
-    public PedidoResponse criar(PedidoRequest req, Authentication auth) {
+    public PedidoResponse criarProprioPedido(PedidoRequest req, Authentication auth) {
         Usuario usuario = usuarioRepository.findById(req.usuarioId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -71,7 +70,6 @@ public class PedidoService {
         return PedidoMapper.toDTO(pedidoRepository.save(entity));
     }
 
-    //adm
     @Transactional
     public PedidoResponse atualizar(Long id, PedidoRequest req) {
         Pedido pedido = pedidoRepository.findById(id)
@@ -95,7 +93,6 @@ public class PedidoService {
         return PedidoMapper.toDTO(pedidoRepository.save(pedido));
     }
 
-    //adm
     @Transactional
     public void deletar(Long id) {
         Pedido pedido = pedidoRepository.findById(id)

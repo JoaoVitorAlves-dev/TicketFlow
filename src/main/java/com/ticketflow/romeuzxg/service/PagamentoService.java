@@ -55,7 +55,6 @@ public class PagamentoService {
         return PagamentoMapper.toDTO(pagamentoRepository.save(entity));
     }
 
-    //adm
     public Page<PagamentoResponse> listarTudo(Pageable pageable) {
         return pagamentoRepository.findAll(pageable).map(PagamentoMapper::toDTO);
     }
@@ -118,7 +117,6 @@ public class PagamentoService {
         pagamentoRepository.delete(pagamento);
     }
 
-    //scheduler
     public void scheduler() {
         List<Pagamento> all = pagamentoRepository.findAll();
 

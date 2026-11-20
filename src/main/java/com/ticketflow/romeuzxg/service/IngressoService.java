@@ -67,7 +67,6 @@ public class IngressoService {
 
     }
 
-
     @Transactional
     public IngressoResponse criar(IngressoRequest req) {
         Pedido pedido = pedidoRepository.findById(req.pedidoId())
