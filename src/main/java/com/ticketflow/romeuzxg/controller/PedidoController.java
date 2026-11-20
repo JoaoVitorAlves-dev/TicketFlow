@@ -21,6 +21,11 @@ public class PedidoController {
         this.pedidoService = pedidoService;
     }
 
+    @GetMapping("/listown")
+    public ResponseEntity<Page<PedidoResponse>> listarProprio(Authentication auth, Pageable pageable) {
+        return ResponseEntity.ok(pedidoService.listarProprios(auth, pageable));
+    }
+
     @GetMapping("/list")
     public ResponseEntity<Page<PedidoResponse>> listar(Pageable pageable) {
         return ResponseEntity.ok(pedidoService.listar(pageable));
@@ -29,11 +34,6 @@ public class PedidoController {
     @PostMapping("/createorder")
     public ResponseEntity<PedidoResponse> criarPedido(@RequestBody @Valid PedidoRequest req) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.criarPedido(req));
-    }
-
-    @PostMapping("/createyourownorder")
-    public ResponseEntity<PedidoResponse> criarProprioPedido(@RequestBody @Valid PedidoRequest req, Authentication auth) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.criarProprioPedido(req, auth));
     }
 
     @PatchMapping("/update/{id}")

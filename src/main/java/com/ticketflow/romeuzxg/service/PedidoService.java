@@ -30,6 +30,11 @@ public class PedidoService {
         this.pedidoRepository = pedidoRepository;
     }
 
+    public Page<PedidoResponse> listarProprios(Authentication auth, Pageable pageable) {
+        return pedidoRepository.findAllByUsuarioEmail(auth.getName(), pageable)
+                .map(PedidoMapper::toDTO);
+    }
+
     public Page<PedidoResponse> listar(Pageable pageable) {
         return pedidoRepository.findAll(pageable).map(PedidoMapper::toDTO);
     }
@@ -38,26 +43,6 @@ public class PedidoService {
     public PedidoResponse criarPedido(PedidoRequest req) {
         Usuario usuario = usuarioRepository.findById(req.usuarioId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        Pedido entity = PedidoMapper.toEntity(req, usuario);
-
-        entity.setStatusPedido(StatusPedido.PENDENTE);
-
-        if (!usuario.getAtivo() || req.expiraEm().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
-        return PedidoMapper.toDTO(pedidoRepository.save(entity));
-    }
-
-    @Transactional
-    public PedidoResponse criarProprioPedido(PedidoRequest req, Authentication auth) {
-        Usuario usuario = usuarioRepository.findById(req.usuarioId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (!usuario.getEmail().equals(auth.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
 
         Pedido entity = PedidoMapper.toEntity(req, usuario);
 
