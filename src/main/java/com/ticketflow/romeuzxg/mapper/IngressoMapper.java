@@ -14,7 +14,6 @@ public class IngressoMapper {
     public Ingresso toEntity(IngressoRequest req, Assento assento, Pedido pedido, Sessao sessao) {
         Ingresso ingresso = new Ingresso();
         ingresso.setAssento(assento);
-        ingresso.setCodigoQr(req.codigoQr());
         ingresso.setPedido(pedido);
         ingresso.setSessao(sessao);
         ingresso.setStatus(req.status());

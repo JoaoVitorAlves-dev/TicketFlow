@@ -11,10 +11,8 @@ public class PagamentoMapper {
 
     public Pagamento toEntity(PagamentoRequest req, Pedido pedido) {
         Pagamento pagamento = new Pagamento();
-        pagamento.setIdempotencyKey(req.idempotency_key());
         pagamento.setMetodo(req.metodo());
         pagamento.setPedido(pedido);
-        pagamento.setStatus(req.status());
         return pagamento;
     }
 

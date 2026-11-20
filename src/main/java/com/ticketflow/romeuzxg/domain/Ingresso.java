@@ -30,6 +30,13 @@ public class Ingresso {
 
     private StatusIngresso status;
 
+    @PrePersist
+    public void gerarQrCode() {
+        if (this.codigoQr == null) {
+            this.codigoQr = UUID.randomUUID();
+        }
+    }
+
     public Ingresso() {
     }
 

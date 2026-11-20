@@ -11,7 +11,6 @@ public class PedidoMapper {
 
     public Pedido toEntity(PedidoRequest req, Usuario usuario) {
         Pedido pedido = new Pedido();
-        pedido.setStatusPedido(req.status());
         pedido.setCupomCodigo(req.cupomCodigo());
         pedido.setExpiraEm(req.expiraEm());
         pedido.setTotal(req.total());

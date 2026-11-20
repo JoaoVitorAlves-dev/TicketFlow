@@ -9,7 +9,6 @@ public record IngressoRequest(
         @NotNull Long pedidoId,
         @NotNull Long sessaoId,
         @NotNull Long assentoId,
-        @NotNull UUID codigoQr,
         @NotNull StatusIngresso status
 ) {
 }

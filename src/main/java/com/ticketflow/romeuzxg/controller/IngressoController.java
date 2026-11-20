@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,13 @@ public class IngressoController {
     @GetMapping("/viewrecords")
     public ResponseEntity<IngressoResponse> verRegistros(Authentication auth) {
         return ResponseEntity.ok(ingressoService.verRegistroProprio(auth));
+    }
+
+    @GetMapping("/{id}/qrcode")
+    public ResponseEntity<byte[]> gerarQrCode(@PathVariable Long id) {
+        byte[] imagem = ingressoService.gerarQrCode(id);
+
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(imagem);
     }
 
     @PostMapping("/create")

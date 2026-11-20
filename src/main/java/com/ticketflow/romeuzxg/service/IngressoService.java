@@ -13,11 +13,13 @@ import com.ticketflow.romeuzxg.repository.AssentoRepository;
 import com.ticketflow.romeuzxg.repository.IngressoRepository;
 import com.ticketflow.romeuzxg.repository.PedidoRepository;
 import com.ticketflow.romeuzxg.repository.SessaoRepository;
+import com.ticketflow.romeuzxg.service.qrcode.QrCodeService;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,12 +34,14 @@ public class IngressoService {
     private final PedidoRepository pedidoRepository;
     private final SessaoRepository sessaoRepository;
     private final AssentoRepository assentoRepository;
+    private final QrCodeService qrCodeService;
 
-    public IngressoService(IngressoRepository ingressoRepository, PedidoRepository pedidoRepository, SessaoRepository sessaoRepository, AssentoRepository assentoRepository) {
+    public IngressoService(IngressoRepository ingressoRepository, PedidoRepository pedidoRepository, SessaoRepository sessaoRepository, AssentoRepository assentoRepository, QrCodeService qrCodeService) {
         this.ingressoRepository = ingressoRepository;
         this.pedidoRepository = pedidoRepository;
         this.sessaoRepository = sessaoRepository;
         this.assentoRepository = assentoRepository;
+        this.qrCodeService = qrCodeService;
     }
 
     @Transactional
@@ -50,6 +54,19 @@ public class IngressoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return new IngressoResponse(ingresso.getId(), ingresso.getPedido(), ingresso.getSessao(), ingresso.getAssento(), ingresso.getCodigoQr(), ingresso.getStatus());
     }
+
+    public byte[] gerarQrCode(Long id) {
+        Ingresso ingresso = ingressoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        try {
+            return qrCodeService.gerarCodigoQr(ingresso.getCodigoQr(), 300, 300);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao gerar QR Code");
+        }
+
+    }
+
 
     @Transactional
     public IngressoResponse criar(IngressoRequest req) {
