@@ -2,7 +2,7 @@ services:
   db:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: clinica
+      MYSQL_DATABASE: ticketflow
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -19,7 +19,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/clinica
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/ticketflow
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
