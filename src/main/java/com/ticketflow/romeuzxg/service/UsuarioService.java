@@ -54,7 +54,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse registrar(RegisterRequest req) {
-        if (usuarioRepository.existsByCpf(req.cpf()) && usuarioRepository.existsByEmail(req.email())) {
+        if (usuarioRepository.existsByCpf(req.cpf()) || usuarioRepository.existsByEmail(req.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 

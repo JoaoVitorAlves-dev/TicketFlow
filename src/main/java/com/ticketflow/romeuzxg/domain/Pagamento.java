@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 @Table(name = "tb_pagamentos")
 public class Pagamento {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)

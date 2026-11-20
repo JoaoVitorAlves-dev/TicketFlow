@@ -99,23 +99,23 @@ public class IngressoService {
 
         Assento assento = assentoRepository.findById(req.assentoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        Pedido pedido = pedidoRepository.findById(req.assentoId())
+        Pedido pedido = pedidoRepository.findById(req.pedidoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        Sessao sessao = sessaoRepository.findById(req.assentoId())
+        Sessao sessao = sessaoRepository.findById(req.sessaoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (!ingresso.getPedido().getUsuario().equals(pedido.getUsuario())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (assento.getAtivo() || !pedido.getUsuario().getAtivo()) {
+        if (!assento.getAtivo() || !pedido.getUsuario().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
         if (!sessao.getEvento().getAtivo() || !sessao.getEvento().getOrganizador().getUsuario().getAtivo() || !sessao.getEvento().getOrganizador().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.GONE);
         }
         if (!ingresso.getAssento().getAtivo() || !ingresso.getPedido().getUsuario().getAtivo() || ingresso.getPedido().getExpiraEm().isBefore(LocalDateTime.now())
-                || ingresso.getSessao().getEvento().getAtivo() || ingresso.getSessao().getEvento().getOrganizador().getAtivo()
-                || ingresso.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || ingresso.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
+                || !ingresso.getSessao().getEvento().getAtivo() || !ingresso.getSessao().getEvento().getOrganizador().getAtivo()
+                || !ingresso.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || ingresso.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
         if (!ingresso.getSessao().getStatus().equals(StatusSessao.ABERTA) || !ingresso.getPedido().getStatusPedido().equals(StatusPedido.PENDENTE)) {
