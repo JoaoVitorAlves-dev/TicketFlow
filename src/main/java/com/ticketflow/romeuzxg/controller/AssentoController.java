@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/assento")
+@RequestMapping("/seat")
 public class AssentoController {
 
     private final AssentoService assentoService;

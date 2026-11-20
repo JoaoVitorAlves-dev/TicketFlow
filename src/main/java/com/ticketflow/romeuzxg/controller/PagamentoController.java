@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/payment")
 public class PagamentoController {
 
     private final PagamentoService pagamentoService;
@@ -30,7 +31,7 @@ public class PagamentoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagamentoService.criarProprioPagamento(req, auth));
     }
 
-    @GetMapping("/listeverythcriarProprioPagamentoing")
+    @GetMapping("/listall")
     public ResponseEntity<Page<PagamentoResponse>> listarTudo(Pageable pageable) {
         return ResponseEntity.ok(pagamentoService.listarTudo(pageable));
     }

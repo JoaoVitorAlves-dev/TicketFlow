@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/evento")
+@RequestMapping("/event")
 public class EventoController {
 
     private final EventoService eventoService;

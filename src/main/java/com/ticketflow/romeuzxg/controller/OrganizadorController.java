@@ -1,6 +1,5 @@
 package com.ticketflow.romeuzxg.controller;
 
-import com.ticketflow.romeuzxg.domain.Organizador;
 import com.ticketflow.romeuzxg.dto.request.OrganizadorRequest;
 import com.ticketflow.romeuzxg.dto.response.OrganizadorResponse;
 import com.ticketflow.romeuzxg.service.OrganizadorService;
@@ -13,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/organizador")
+@RequestMapping("/organizer")
 public class OrganizadorController {
 
     private final OrganizadorService organizadorService;

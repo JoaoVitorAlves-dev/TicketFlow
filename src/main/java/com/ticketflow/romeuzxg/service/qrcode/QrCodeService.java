@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class QrCodeService {
 
-    public byte[] gerarCodigoQr(UUID codigo, int largura, int altura) throws Exception {
+    public byte[] gerarQrCode(UUID codigo, int largura, int altura) throws Exception {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(codigo.toString(), BarcodeFormat.QR_CODE, largura, altura);
 
@@ -19,4 +19,5 @@ public class QrCodeService {
             return outputStream.toByteArray();
         }
     }
+
 }

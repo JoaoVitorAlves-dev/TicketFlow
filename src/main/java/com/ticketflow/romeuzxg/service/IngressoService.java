@@ -60,11 +60,10 @@ public class IngressoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         try {
-            return qrCodeService.gerarCodigoQr(ingresso.getCodigoQr(), 300, 300);
+            return qrCodeService.gerarQrCode(ingresso.getCodigoQr(), 300, 300);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao gerar QR Code");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao gerar QR Code.");
         }
-
     }
 
     @Transactional

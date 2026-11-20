@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/sessao")
+@RequestMapping("/session")
 public class SessaoController {
 
     private final SessaoService sessaoService;

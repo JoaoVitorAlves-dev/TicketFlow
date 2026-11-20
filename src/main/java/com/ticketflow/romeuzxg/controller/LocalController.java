@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/local")
+@RequestMapping("/location")
 public class LocalController {
 
     private final LocalService localService;

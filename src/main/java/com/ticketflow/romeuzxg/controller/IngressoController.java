@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ingresso")
+@RequestMapping("/ticket")
 public class IngressoController {
 
     private final IngressoService ingressoService;
@@ -33,10 +33,9 @@ public class IngressoController {
     }
 
     @GetMapping("/{id}/qrcode")
-    public ResponseEntity<byte[]> gerarQrCode(@PathVariable Long id) {
-        byte[] imagem = ingressoService.gerarQrCode(id);
-
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(imagem);
+    public ResponseEntity<byte[]> gerarCodigoQr(@PathVariable Long id) {
+        byte[] bytes = ingressoService.gerarQrCode(id);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
     }
 
     @PostMapping("/create")
