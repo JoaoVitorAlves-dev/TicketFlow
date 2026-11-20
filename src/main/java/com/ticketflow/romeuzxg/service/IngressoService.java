@@ -3,6 +3,7 @@ package com.ticketflow.romeuzxg.service;
 import com.ticketflow.romeuzxg.domain.Assento;
 import com.ticketflow.romeuzxg.domain.Ingresso;
 import com.ticketflow.romeuzxg.domain.Pedido;
+import com.ticketflow.romeuzxg.domain.Roles.StatusIngresso;
 import com.ticketflow.romeuzxg.domain.Roles.StatusPedido;
 import com.ticketflow.romeuzxg.domain.Roles.StatusSessao;
 import com.ticketflow.romeuzxg.domain.Sessao;
@@ -55,9 +56,13 @@ public class IngressoService {
         return new IngressoResponse(ingresso.getId(), ingresso.getPedido(), ingresso.getSessao(), ingresso.getAssento(), ingresso.getCodigoQr(), ingresso.getStatus());
     }
 
-    public byte[] gerarQrCode(Long id) {
+    public byte[] gerarQrCode(Long id, Authentication auth) {
         Ingresso ingresso = ingressoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!ingresso.getPedido().getUsuario().getEmail().equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
 
         try {
             return qrCodeService.gerarQrCode(ingresso.getCodigoQr(), 300, 300);
@@ -74,7 +79,7 @@ public class IngressoService {
         Sessao sessao = sessaoRepository.findById(req.sessaoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Assento assento = assentoRepository.findById(req.assentoId())
+        Assento assento = assentoRepository.buscarPorIdComBloqueio(req.assentoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Ingresso entity = IngressoMapper.toEntity(req, assento, pedido, sessao);
@@ -87,6 +92,11 @@ public class IngressoService {
 
         if (!entity.getSessao().getStatus().equals(StatusSessao.ABERTA) || !entity.getPedido().getStatusPedido().equals(StatusPedido.PENDENTE)) {
             throw new ResponseStatusException(HttpStatus.GONE);
+        }
+
+        if (ingressoRepository.existsBySessaoIdAndAssentoIdAndStatusNot(
+                sessao.getId(), assento.getId(), StatusIngresso.CANCELADO)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Assento já reservado.");
         }
 
         return IngressoMapper.toDTO(ingressoRepository.save(entity));
@@ -120,6 +130,10 @@ public class IngressoService {
         }
         if (!ingresso.getSessao().getStatus().equals(StatusSessao.ABERTA) || !ingresso.getPedido().getStatusPedido().equals(StatusPedido.PENDENTE)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+        if (ingressoRepository.existsBySessaoIdAndAssentoIdAndStatusNotAndIdNot(
+                sessao.getId(), assento.getId(), StatusIngresso.CANCELADO, id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Assento já reservado.");
         }
 
         ingresso.setStatus(req.status());

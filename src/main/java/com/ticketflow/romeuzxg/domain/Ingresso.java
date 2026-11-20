@@ -28,6 +28,7 @@ public class Ingresso {
     @Column(nullable = false, name = "codigo_qr")
     private UUID codigoQr;
 
+    @Enumerated(EnumType.STRING)
     private StatusIngresso status;
 
     @PrePersist

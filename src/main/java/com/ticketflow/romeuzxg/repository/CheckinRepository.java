@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CheckinRepository extends JpaRepository<Checkin, Long> {
 
-    Page<CheckinResponse> findAllByIngressoPedidoUsuarioEmail(String email, Pageable pageable);
+    Page<CheckinResponse> findAllByIngressoSessaoEventoOrganizadorUsuarioEmail(String email, Pageable pageable);
 
 }

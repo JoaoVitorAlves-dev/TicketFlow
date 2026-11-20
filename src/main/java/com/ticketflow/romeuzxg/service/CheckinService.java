@@ -31,7 +31,7 @@ public class CheckinService {
     }
 
     public Page<CheckinResponse> verRegistros(Pageable pageable, Authentication auth) {
-        return checkinRepository.findAllByIngressoPedidoUsuarioEmail(auth.getName(), pageable);
+        return checkinRepository.findAllByIngressoSessaoEventoOrganizadorUsuarioEmail(auth.getName(), pageable);
     }
 
     @Transactional
@@ -75,6 +75,7 @@ public class CheckinService {
         return checkinRepository.findAll(pageable).map(CheckinMapper::toDTO);
     }
 
+    @Transactional
     public CheckinResponse criar(CheckinRequest req) {
         Ingresso ingresso = ingressoRepository.findById(req.ingressoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -99,20 +100,17 @@ public class CheckinService {
         return CheckinMapper.toDTO(checkinRepository.save(entity));
     }
 
+    @Transactional
     public CheckinResponse atualizar(Long id, CheckinRequest req) {
         Checkin checkin = checkinRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!checkin.getIngresso().getPedido().getUsuario().getAtivo() || !checkin.getIngresso().getAssento().getAtivo()) {
+        if (!checkin.getIngresso().getPedido().getUsuario().getAtivo()
+                || !checkin.getIngresso().getAssento().getAtivo()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (checkin.getIngresso().getStatus().equals(StatusIngresso.CANCELADO) || checkin.getIngresso().getStatus().equals(StatusIngresso.USADO)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-        if (checkin.getIngresso().getPedido().getExpiraEm().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-        if (!checkin.getIngresso().getPedido().getStatusPedido().equals(StatusPedido.PAGO)) {
+
+        if (checkin.getIngresso().getStatus().equals(StatusIngresso.CANCELADO)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 

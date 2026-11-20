@@ -2,6 +2,7 @@ package com.ticketflow.romeuzxg.config;
 
 import com.ticketflow.romeuzxg.service.TokenService;
 import com.ticketflow.romeuzxg.service.UsuarioDetailsService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +41,7 @@ public class TokenFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (JwtException |IllegalArgumentException e) {
             logger.info(e.getMessage());
         }
         filterChain.doFilter(request, response);
