@@ -81,11 +81,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/order/listown").hasAnyRole("CUSTOMER", "ORGANIZER")
                         .requestMatchers(HttpMethod.PATCH, "/order/update/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/order/deleterecords/{id}").hasAnyRole("CUSTOMER", "ORGANIZER")
+                        .requestMatchers(HttpMethod.DELETE, "/order/delete/{id}").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/ticket/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ticket/view").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ticket/viewrecords").hasAnyRole("CUSTOMER", "ORGANIZER")
-                        .requestMatchers(HttpMethod.GET).hasAnyRole("CUSTOMER", "ORGANIZER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/ticket/{id}/qrcode").hasAnyRole("CUSTOMER", "ORGANIZER", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/ticket/update/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/ticket/delete/{id}").hasRole("ADMIN")
 
