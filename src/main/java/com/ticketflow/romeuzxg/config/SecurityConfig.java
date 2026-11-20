@@ -63,7 +63,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/location/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/location/view").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "location/update/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/location/update/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/location/delete/{id}").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/sector/create").hasRole("ADMIN")
@@ -71,10 +71,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/sector/update/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/sector/delete/{id}").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.POST, "seat/create").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/seat/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/seat/view").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "seat/update/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "seat/deactivate/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/seat/update/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/seat/deactivate/{id}").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/order/createorder").hasAnyRole("CUSTOMER", "ORGANIZER")
                         .requestMatchers(HttpMethod.GET, "/order/list").hasRole("ADMIN")

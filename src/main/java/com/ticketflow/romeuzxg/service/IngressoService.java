@@ -71,7 +71,7 @@ public class IngressoService {
         Pedido pedido = pedidoRepository.findById(req.pedidoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Sessao sessao = sessaoRepository.findById(req.assentoId())
+        Sessao sessao = sessaoRepository.findById(req.sessaoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Assento assento = assentoRepository.findById(req.assentoId())
@@ -80,8 +80,8 @@ public class IngressoService {
         Ingresso entity = IngressoMapper.toEntity(req, assento, pedido, sessao);
 
         if (!entity.getAssento().getAtivo() || !entity.getPedido().getUsuario().getAtivo() || entity.getPedido().getExpiraEm().isBefore(LocalDateTime.now())
-                || entity.getSessao().getEvento().getAtivo() || entity.getSessao().getEvento().getOrganizador().getAtivo()
-                || entity.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || entity.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
+                || !entity.getSessao().getEvento().getAtivo() || !entity.getSessao().getEvento().getOrganizador().getAtivo()
+                || !entity.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || entity.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
