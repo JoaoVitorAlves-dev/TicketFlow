@@ -51,14 +51,12 @@ public class IngressoService {
     }
 
     public IngressoResponse verRegistroProprio(Authentication auth) {
-        Ingresso ingresso = ingressoRepository.findByPedidoUsuarioEmail(auth.getName())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Ingresso ingresso = ingressoRepository.findByPedidoUsuarioEmail(auth.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return new IngressoResponse(ingresso.getId(), ingresso.getPedido(), ingresso.getSessao(), ingresso.getAssento(), ingresso.getCodigoQr(), ingresso.getStatus());
     }
 
     public byte[] gerarQrCode(Long id, Authentication auth) {
-        Ingresso ingresso = ingressoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Ingresso ingresso = ingressoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (!ingresso.getPedido().getUsuario().getEmail().equals(auth.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -73,20 +71,17 @@ public class IngressoService {
 
     @Transactional
     public IngressoResponse criar(IngressoRequest req) {
-        Pedido pedido = pedidoRepository.findById(req.pedidoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Pedido pedido = pedidoRepository.findById(req.pedidoId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Sessao sessao = sessaoRepository.findById(req.sessaoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Sessao sessao = sessaoRepository.findById(req.sessaoId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Assento assento = assentoRepository.buscarPorIdComBloqueio(req.assentoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Assento assento = assentoRepository.buscarPorIdComBloqueio(req.assentoId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Ingresso entity = IngressoMapper.toEntity(req, assento, pedido, sessao);
 
-        if (!entity.getAssento().getAtivo() || !entity.getPedido().getUsuario().getAtivo() || entity.getPedido().getExpiraEm().isBefore(LocalDateTime.now())
-                || !entity.getSessao().getEvento().getAtivo() || !entity.getSessao().getEvento().getOrganizador().getAtivo()
-                || !entity.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || entity.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
+        entity.setStatus(StatusIngresso.RESERVADO);
+
+        if (!entity.getAssento().getAtivo() || !entity.getPedido().getUsuario().getAtivo() || entity.getPedido().getExpiraEm().isBefore(LocalDateTime.now()) || !entity.getSessao().getEvento().getAtivo() || !entity.getSessao().getEvento().getOrganizador().getAtivo() || !entity.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || entity.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
@@ -94,8 +89,7 @@ public class IngressoService {
             throw new ResponseStatusException(HttpStatus.GONE);
         }
 
-        if (ingressoRepository.existsBySessaoIdAndAssentoIdAndStatusNot(
-                sessao.getId(), assento.getId(), StatusIngresso.CANCELADO)) {
+        if (ingressoRepository.existsBySessaoIdAndAssentoIdAndStatusNot(sessao.getId(), assento.getId(), StatusIngresso.CANCELADO)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Assento já reservado.");
         }
 
@@ -104,51 +98,40 @@ public class IngressoService {
 
     @Transactional
     public IngressoResponse atualizar(Long id, IngressoRequest req) {
-        Ingresso ingresso = ingressoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Ingresso ingresso = ingressoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Assento assento = assentoRepository.findById(req.assentoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        Pedido pedido = pedidoRepository.findById(req.pedidoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        Sessao sessao = sessaoRepository.findById(req.sessaoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Assento assento = assentoRepository.buscarPorIdComBloqueio(req.assentoId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!ingresso.getPedido().getUsuario().equals(pedido.getUsuario())) {
+        Pedido pedido = pedidoRepository.findById(req.pedidoId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Sessao sessao = sessaoRepository.findById(req.sessaoId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!ingresso.getPedido().getUsuario().getEmail().equals(pedido.getUsuario().getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (!assento.getAtivo() || !pedido.getUsuario().getAtivo()) {
+
+        if (!assento.getAtivo() || !pedido.getUsuario().getAtivo() || pedido.getExpiraEm().isBefore(LocalDateTime.now()) || !sessao.getEvento().getAtivo() || !sessao.getEvento().getOrganizador().getAtivo() || !sessao.getEvento().getOrganizador().getUsuario().getAtivo() || sessao.getDataHora().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (!sessao.getEvento().getAtivo() || !sessao.getEvento().getOrganizador().getUsuario().getAtivo() || !sessao.getEvento().getOrganizador().getAtivo()) {
-            throw new ResponseStatusException(HttpStatus.GONE);
-        }
-        if (!ingresso.getAssento().getAtivo() || !ingresso.getPedido().getUsuario().getAtivo() || ingresso.getPedido().getExpiraEm().isBefore(LocalDateTime.now())
-                || !ingresso.getSessao().getEvento().getAtivo() || !ingresso.getSessao().getEvento().getOrganizador().getAtivo()
-                || !ingresso.getSessao().getEvento().getOrganizador().getUsuario().getAtivo() || ingresso.getSessao().getDataHora().isBefore(LocalDateTime.now())) {
+
+        if (!sessao.getStatus().equals(StatusSessao.ABERTA) || !pedido.getStatusPedido().equals(StatusPedido.PENDENTE)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (!ingresso.getSessao().getStatus().equals(StatusSessao.ABERTA) || !ingresso.getPedido().getStatusPedido().equals(StatusPedido.PENDENTE)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-        if (ingressoRepository.existsBySessaoIdAndAssentoIdAndStatusNotAndIdNot(
-                sessao.getId(), assento.getId(), StatusIngresso.CANCELADO, id)) {
+
+        if (ingressoRepository.existsBySessaoIdAndAssentoIdAndStatusNotAndIdNot(sessao.getId(), assento.getId(), StatusIngresso.CANCELADO, id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Assento já reservado.");
         }
 
-        ingresso.setStatus(req.status());
-        ingresso.setCodigoQr(UUID.randomUUID());
-        ingresso.setSessao(sessao);
-        ingresso.setPedido(pedido);
         ingresso.setAssento(assento);
+        ingresso.setPedido(pedido);
+        ingresso.setSessao(sessao);
 
         return IngressoMapper.toDTO(ingressoRepository.save(ingresso));
     }
 
     @Transactional
     public void deletar(Long id) {
-        Ingresso ingresso = ingressoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Ingresso ingresso = ingressoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ingressoRepository.delete(ingresso);
     }
 

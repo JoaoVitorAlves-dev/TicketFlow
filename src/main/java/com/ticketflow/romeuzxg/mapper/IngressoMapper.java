@@ -16,7 +16,6 @@ public class IngressoMapper {
         ingresso.setAssento(assento);
         ingresso.setPedido(pedido);
         ingresso.setSessao(sessao);
-        ingresso.setStatus(req.status());
         return ingresso;
     }
 
